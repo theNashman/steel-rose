@@ -1,7 +1,9 @@
 params ["_killed", "_killer", "_instigator"];
+_kPoints = _instigator getVariable ["kPoints", 0];
 
-if (isNull _instigator) then {_instigator = UAVControl vehicle _killer select 0}; // UAV/UGV player operated road kill
-if (isNull _instigator) then {_instigator = _killer}; // player driven vehicle road kill
+
+if (isNull _instigator) then {_instigator = UAVControl vehicle _killer select 0}; // UAV/UGV _instigator operated road kill
+if (isNull _instigator) then {_instigator = _killer}; // _instigator driven vehicle road kill
 
 
 _unitName = getText (configFile >> "CfgVehicles" >> typeOf _killed >> "displayName");
@@ -13,14 +15,32 @@ _typeKilled = 0;
 {
 	if (_killed isKindOf _x) then {_typeKilled = _x};
 
-} forEach ["Man", "LandVehicle", "Air"];
+} forEach ["CAManBase", "LandVehicle", "Air"];
 
 
 switch (_typeKilled) do {
-	case "Man": {systemChat str format ["Man Killed By %1", name _instigator];};
-	case "LandVehicle": {systemChat str format ["Vehicle Killed By %1", name _instigator];};
-	case "Air": {systemChat str format ["Vehicle Killed By %1", name _instigator];};
-	default {systemChat "Something else has been killed";};
+
+	case "CAManBase": {
+		systemChat str format ["Man Killed By %1", name _instigator];
+		_instigator setVariable ["kPoints", _kPoints + 5, true]; 
+		_instigator groupChat format ["%1 now has %2 Points", name _instigator, _instigator getVariable "kPoints"];
+		};
+
+	case "LandVehicle": {
+		systemChat str format ["Vehicle Killed By %1", name _instigator];
+		_instigator setVariable ["kPoints", _kPoints + 10, true];
+		_instigator groupChat format ["%1 now has %2 Points", name _instigator, _instigator getVariable "kPoints"];
+		};
+
+	case "Air": {
+		systemChat str format ["Vehicle Killed By %1", name _instigator];
+		_instigator setVariable ["kPoints", _kPoints + 15, true];
+		_instigator groupChat format ["%1 now has %2 Points", name _instigator, _instigator getVariable "kPoints"];
+		};
+
+	default {
+		systemChat "%1 else has been killed", name _killed;
+		};
 };
 
 
@@ -57,7 +77,7 @@ switch (_typeKilled) do {
 Class names
 
 	"LandVehicle"
-	"Man"
+	"CAManBase"
 	"Air"
 
 */
