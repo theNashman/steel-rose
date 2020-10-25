@@ -9,5 +9,5 @@ east setFriend [west, 1];
 
 
 addMissionEventHandler ["EntityKilled", {
-	_this execVM "scripts\points.sqf";
+	_this execVM "scripts\kpoints.sqf";
 }];

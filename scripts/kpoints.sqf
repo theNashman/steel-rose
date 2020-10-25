@@ -1,5 +1,21 @@
 params ["_killed", "_killer", "_instigator"];
-_kPoints = _instigator getVariable ["kPoints", 0];
+
+
+
+//Pre-defined Kill Points
+//Change only kMultiplier to increase or decrease the score for all kills
+//But don't touch others or costs become unbalanced
+#define kMultiplier 5
+_kpMan = 1 * kMultiplier;
+_kpLand = 2 * kMultiplier;
+_kpAir = 3 * kMultiplier;
+
+
+
+
+
+
+
 
 
 if (isNull _instigator) then {_instigator = UAVControl vehicle _killer select 0}; // UAV/UGV _instigator operated road kill
@@ -18,28 +34,29 @@ _typeKilled = 0;
 } forEach ["CAManBase", "LandVehicle", "Air"];
 
 
+
+
+
+
+
+
+
 switch (_typeKilled) do {
 
 	case "CAManBase": {
-		systemChat str format ["Man Killed By %1", name _instigator];
-		_instigator setVariable ["kPoints", _kPoints + 5, true]; 
-		_instigator groupChat format ["%1 now has %2 Points", name _instigator, _instigator getVariable "kPoints"];
+		[_killed, _killer, _instigator, _kpMan] spawn ROSE_fnc_killMan;
 		};
 
 	case "LandVehicle": {
-		systemChat str format ["Vehicle Killed By %1", name _instigator];
-		_instigator setVariable ["kPoints", _kPoints + 10, true];
-		_instigator groupChat format ["%1 now has %2 Points", name _instigator, _instigator getVariable "kPoints"];
+		[_killed, _killer, _instigator, _kpLand] spawn ROSE_fnc_killLand;
 		};
 
 	case "Air": {
-		systemChat str format ["Vehicle Killed By %1", name _instigator];
-		_instigator setVariable ["kPoints", _kPoints + 15, true];
-		_instigator groupChat format ["%1 now has %2 Points", name _instigator, _instigator getVariable "kPoints"];
+		[_killed, _killer, _instigator, _kpAir] spawn ROSE_fnc_killAir;
 		};
 
 	default {
-		systemChat "%1 else has been killed", name _killed;
+		systemChat str format ["%1 has died", name _killed];
 		};
 };
 
